@@ -4,7 +4,9 @@
   "description": "Router",
   "license": ["GPL-3.0"],
   "keywords": ["router", "webchemistry"],
-  "autoload": ["src/"],
+  "autoload": {
+    "classmap": ["src/"]
+  },
   "authors": [
     {
       "name": "Antik",
