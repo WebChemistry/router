@@ -13,6 +13,9 @@ class RouterExtension extends CompilerExtension {
 		'main' => 'App\Routers\LocalRouter'
 	];
 
+	/** @var bool */
+	private $fixed = FALSE;
+
 	/**
 	 * Processes configuration data. Intended to be overridden by descendant.
 	 *
@@ -24,6 +27,13 @@ class RouterExtension extends CompilerExtension {
 
 		$builder->addDefinition($this->prefix('routerManager'))
 			->setClass('WebChemistry\Routing\RouteManager', [$config['main'], $config['routers']]);
+
+		// kdyby/console fix
+		if ($serviceName = $builder->getByType('Nette\Application\IRouter')) {
+			$this->fixed = TRUE;
+			$builder->getDefinition($serviceName)
+				->setFactory('@WebChemistry\Routing\RouteManager::createRouter');
+		}
 	}
 
 	/**
@@ -32,6 +42,9 @@ class RouterExtension extends CompilerExtension {
 	 * @return void
 	 */
 	public function beforeCompile() {
+		if ($this->fixed) {
+			return;
+		}
 		$builder = $this->getContainerBuilder();
 
 		$builder->getDefinition('router')
