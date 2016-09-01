@@ -63,46 +63,38 @@ class RouteManager {
 	/**
 	 * @param string $module
 	 * @param int $priority
+	 * @return array
 	 */
 	public function getModule($module, $priority = NULL) {
 		if ($priority === NULL) {
-			if ($this->isMain) {
-				$priority = 10;
-			} else {
-				$priority = 1;
-			}
+			$priority = $this->isMain ? 10 : 0;
 		}
-		if (!isset($this->modules[$module][$priority])) {
-			$this->createModule($module, $priority);
+		$this->checkPriority($priority);
+		if (!isset($this->modules[$module])) {
+			$this->createModule($module);
+		}
+		if ($this->modules[$module][$priority] === NULL) {
+			$this->modules[$module][$priority] = new RouteList($module);
 		}
 
 		return $this->modules[$module][$priority];
 	}
 
-	/**
-	 * @param string $module
-	 * @param int $priority
-	 * @throws RouterException
-	 */
-	protected function createModule($module, $priority) {
-		if ($priority == 10 && !$this->isMain) {
+	protected function checkPriority($priority) {
+		if ($priority === 10 && !$this->isMain) {
 			throw new RouterException('Only main router can set priority 10.');
 		}
-		if ($priority < 1 || $priority > 10) {
+		if ($priority < 0 || $priority > 10) {
 			throw new OutOfRangeException('Priority out of range.');
 		}
-		if (!$this->isMain && !isset($this->modules[$module])) {
-			$this->insertBefore($module, []);
-		}
-		$this->modules[$module][$priority] = new RouteList($module);
 	}
 
-	protected function insertBefore($key, $value) {
-		$new[$key] = $value;
-		foreach ($this->modules as $name => $array) {
-			$new[$name] = $array;
-		}
-		$this->modules = $new;
+	/**
+	 * @param string $module
+	 * @throws RouterException
+	 */
+	protected function createModule($module) {
+		$this->modules[$module] = array_fill(0, 11, NULL);
 	}
 
 	/**
@@ -138,13 +130,15 @@ class RouteManager {
 		$return = new RouteList();
 		foreach ($this->modules as $module => $values)	 {
 			$routeList = new RouteList($module);
-			ksort($values);
 			/** @var RouteList $list */
 			foreach ($values as $list) {
-				foreach ($list->getIterator() as $route) {
-					$routeList[] = $route;
+				if ($list) {
+					foreach ($list->getIterator() as $route) {
+						$routeList[] = $route;
+					}
 				}
 			}
+			$routeList->warmupCache();
 			$return[] = $routeList;
 		}
 
