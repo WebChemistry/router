@@ -1,16 +1,23 @@
 {
-  "name": "webchemistry/router",
-  "type": "library",
-  "description": "Router",
-  "license": ["GPL-3.0"],
-  "keywords": ["router", "webchemistry"],
-  "autoload": {
-    "classmap": ["src/"]
-  },
-  "authors": [
-    {
-      "name": "Antik",
-      "email": "antik494@gmail.com"
-    }
-  ]
+	"name": "webchemistry/router",
+	"type": "library",
+	"description": "Router",
+	"license": [
+		"GPL-3.0"
+	],
+	"keywords": [
+		"router",
+		"webchemistry"
+	],
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
+	},
+	"authors": [
+		{
+			"name": "Antik",
+			"email": "antik494@gmail.com"
+		}
+	]
 }

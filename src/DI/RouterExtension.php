@@ -4,13 +4,16 @@ namespace WebChemistry\Routing\DI;
 
 use Nette;
 use Nette\DI\CompilerExtension;
+use WebChemistry\Routing\RouteManager;
+use Nette\Application\IRouter;
+use WebChemistry\Routing\RouterException;
 
 class RouterExtension extends CompilerExtension {
 
 	/** @var array */
 	private $defaults = [
 		'routers' => [],
-		'main' => 'App\Routers\LocalRouter'
+		'main' => NULL
 	];
 
 	/** @var bool */
@@ -19,20 +22,24 @@ class RouterExtension extends CompilerExtension {
 	/**
 	 * Processes configuration data. Intended to be overridden by descendant.
 	 *
-	 * @return void
+	 * @throws RouterException
 	 */
 	public function loadConfiguration() {
 		$builder = $this->getContainerBuilder();
 		$config = $this->validateConfig($this->defaults, $this->getConfig());
 
+		if (!$config['main']) {
+			throw new RouterException('Main route must be set.');
+		}
+
 		$builder->addDefinition($this->prefix('routerManager'))
-			->setClass('WebChemistry\Routing\RouteManager', [$config['main'], $config['routers']]);
+			->setClass(RouteManager::class, [$config['main'], $config['routers']]);
 
 		// kdyby/console fix
-		if ($serviceName = $builder->getByType('Nette\Application\IRouter')) {
+		if ($serviceName = $builder->getByType(IRouter::class)) {
 			$this->fixed = TRUE;
 			$builder->getDefinition($serviceName)
-				->setFactory('@WebChemistry\Routing\RouteManager::createRouter');
+				->setFactory('@' . RouteManager::class . '::createRouter');
 		}
 	}
 
@@ -48,7 +55,7 @@ class RouterExtension extends CompilerExtension {
 		$builder = $this->getContainerBuilder();
 
 		$builder->getDefinition('router')
-			->setFactory('@WebChemistry\Routing\RouteManager::createRouter');
+			->setFactory('@' . RouteManager::class . '::createRouter');
 	}
 
 }

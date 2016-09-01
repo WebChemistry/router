@@ -126,8 +126,7 @@ class RouteManager {
 				$router = new $router;
 			}
 			if (!$router instanceof IRouter) {
-				throw new RouterException('Class ' . get_class($router) . ' must implements
-				WebChemistry\Routing\IRouter.');
+				throw new RouterException('Class ' . get_class($router) . ' must implements ' . IRouter::class);
 			}
 			$router->createRouter($this);
 			$this->isMain = FALSE;
