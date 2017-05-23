@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WebChemistry\Routing;
 
 interface IRouter {
@@ -8,6 +10,6 @@ interface IRouter {
 	 * @param RouteManager $manager
 	 * @return void
 	 */
-	public function createRouter(RouteManager $manager);
+	public function createRouter(RouteManager $manager): void;
 
 }

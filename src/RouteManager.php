@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WebChemistry\Routing;
 
 use Nette\Application\Routers\Route;
@@ -24,7 +26,7 @@ class RouteManager {
 	/** @var array */
 	private $forbiddenRouters = [];
 
-	public function __construct($mainRouter, $routers) {
+	public function __construct(string $mainRouter, array $routers) {
 		$this->routers = $routers;
 		array_unshift($this->routers, $mainRouter);
 	}
@@ -33,7 +35,7 @@ class RouteManager {
 	 * @param string $style
 	 * @param string $parent
 	 */
-	public function addStyle($style, $parent = '#') {
+	public function addStyle(string $style, string $parent = '#'): void {
 		if (isset(Route::$styles[$style])) {
 			return;
 		}
@@ -44,7 +46,7 @@ class RouteManager {
 			Route::$styles[$style] = Route::$styles[$parent];
 
 		} else {
-			Route::$styles[$style] = array();
+			Route::$styles[$style] = [];
 		}
 	}
 
@@ -53,7 +55,7 @@ class RouteManager {
 	 * @param string $key
 	 * @param callable $value
 	 */
-	public function setStyleProperty($style, $key, $value) {
+	public function setStyleProperty(string $style, string $key, callable $value): void {
 		if (!isset(Route::$styles[$style])) {
 			throw new InvalidArgumentException("Style '$style' doesn't exist.");
 		}
@@ -65,7 +67,7 @@ class RouteManager {
 	 * @param int $priority
 	 * @return array
 	 */
-	public function getModule($module, $priority = NULL) {
+	public function getModule(string $module, ?int $priority = NULL): array {
 		if ($priority === NULL) {
 			$priority = $this->isMain ? 10 : 0;
 		}
@@ -80,7 +82,7 @@ class RouteManager {
 		return $this->modules[$module][$priority];
 	}
 
-	protected function checkPriority($priority) {
+	protected function checkPriority(int $priority): void {
 		if ($priority === 10 && !$this->isMain) {
 			throw new RouterException('Only main router can set priority 10.');
 		}
@@ -93,7 +95,7 @@ class RouteManager {
 	 * @param string $module
 	 * @throws RouterException
 	 */
-	protected function createModule($module) {
+	protected function createModule(string $module): void {
 		$this->modules[$module] = array_fill(0, 11, NULL);
 	}
 
@@ -101,7 +103,7 @@ class RouteManager {
 	 * @param string $router
 	 * @return string
 	 */
-	private function getClass($router) {
+	private function getClass(string $router): string {
 		return is_object($router) ? get_class($router) : $router;
 	}
 
@@ -109,7 +111,7 @@ class RouteManager {
 	 * @return RouteList
 	 * @throws RouterException
 	 */
-	public function createRouter() {
+	public function createRouter(): RouteList {
 		foreach ($this->routers as $router) {
 			if (array_search($this->getClass($router), $this->forbiddenRouters) !== FALSE) {
 				continue;
@@ -145,7 +147,7 @@ class RouteManager {
 		return $return;
 	}
 
-	public function finish() {
+	public function finish(): void {
 		if (!$this->isMain) {
 			throw new RouterException('Only main router can call this method.');
 		}
@@ -154,16 +156,13 @@ class RouteManager {
 
 	/**
 	 * @param array $forbiddenRouters
-	 * @return RouteManager
 	 * @throws RouterException
 	 */
-	public function setForbiddenRouters(array $forbiddenRouters) {
+	public function setForbiddenRouters(array $forbiddenRouters): void {
 		if (!$this->isMain) {
 			throw new RouterException('Only main router can set forbidden routers.');
 		}
 		$this->forbiddenRouters = $forbiddenRouters;
-
-		return $this;
 	}
 
 }

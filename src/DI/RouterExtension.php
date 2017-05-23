@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WebChemistry\Routing\DI;
 
-use Nette;
 use Nette\DI\CompilerExtension;
 use WebChemistry\Routing\RouteManager;
 use Nette\Application\IRouter;
@@ -11,7 +12,7 @@ use WebChemistry\Routing\RouterException;
 class RouterExtension extends CompilerExtension {
 
 	/** @var array */
-	private $defaults = [
+	public $defaults = [
 		'routers' => [],
 		'main' => NULL
 	];
@@ -24,7 +25,7 @@ class RouterExtension extends CompilerExtension {
 	 *
 	 * @throws RouterException
 	 */
-	public function loadConfiguration() {
+	public function loadConfiguration(): void {
 		$builder = $this->getContainerBuilder();
 		$config = $this->validateConfig($this->defaults, $this->getConfig());
 
@@ -48,7 +49,7 @@ class RouterExtension extends CompilerExtension {
 	 *
 	 * @return void
 	 */
-	public function beforeCompile() {
+	public function beforeCompile(): void {
 		if ($this->fixed) {
 			return;
 		}
