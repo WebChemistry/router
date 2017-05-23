@@ -123,9 +123,11 @@ class RouteManager {
 				throw new RouterException('Class ' . get_class($router) . ' must implements ' . IRouter::class);
 			}
 			$router->createRouter($this);
-			$this->isMain = FALSE;
-			if ($this->finished) {
-				break;
+			if ($this->isMain) {
+				$this->isMain = FALSE;
+				if ($this->finished) {
+					break;
+				}
 			}
 		}
 
