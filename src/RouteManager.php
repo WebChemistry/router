@@ -65,9 +65,9 @@ class RouteManager {
 	/**
 	 * @param string $module
 	 * @param int $priority
-	 * @return array
+	 * @return RouteList
 	 */
-	public function getModule(string $module, ?int $priority = NULL): array {
+	public function getModule(string $module, ?int $priority = NULL): RouteList {
 		if ($priority === NULL) {
 			$priority = $this->isMain ? 10 : 0;
 		}
