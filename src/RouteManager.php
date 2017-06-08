@@ -113,7 +113,7 @@ class RouteManager {
 	 */
 	public function createRouter(): RouteList {
 		foreach ($this->routers as $router) {
-			if (array_search($this->getClass($router), $this->forbiddenRouters) !== FALSE) {
+			if ($this->forbiddenRouters && array_search($this->getClass($router), $this->forbiddenRouters) !== FALSE) {
 				continue;
 			}
 			if (!is_object($router)) {
