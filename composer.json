@@ -10,7 +10,11 @@
 		"webchemistry"
 	],
 	"require": {
-		"php": ">=7.1"
+		"php": ">=7.1",
+		"nette/application": "^2.3 || ^3.0"
+	},
+	"require-dev": {
+		"nette/di": "^2.3 || ^3.0"
 	},
 	"autoload": {
 		"classmap": [
