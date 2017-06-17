@@ -26,7 +26,7 @@ class RouteManager {
 	/** @var array */
 	private $forbiddenRouters = [];
 
-	public function __construct(string $mainRouter, array $routers) {
+	public function __construct(IRouter $mainRouter, array $routers) {
 		$this->routers = $routers;
 		array_unshift($this->routers, $mainRouter);
 	}

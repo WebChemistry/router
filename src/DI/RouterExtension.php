@@ -8,6 +8,7 @@ use Nette\DI\CompilerExtension;
 use WebChemistry\Routing\RouteManager;
 use Nette\Application\IRouter;
 use WebChemistry\Routing\RouterException;
+use WebChemistry\Routing;
 
 class RouterExtension extends CompilerExtension {
 
@@ -33,8 +34,20 @@ class RouterExtension extends CompilerExtension {
 			throw new RouterException('Main route must be set.');
 		}
 
+		$builder->addDefinition($this->prefix('mainRouter'))
+			->setClass(Routing\IRouter::class)
+			->setFactory($config['main']);
+
+		$routers = [];
+		foreach ($config['routers'] as $name => $router) {
+			$routers[] = $builder->addDefinition($this->prefix('router.' . $name))
+				->setClass(Routing\IRouter::class)
+				->setFactory($router)
+				->setAutowired(FALSE);
+		}
+
 		$builder->addDefinition($this->prefix('routerManager'))
-			->setClass(RouteManager::class, [$config['main'], $config['routers']]);
+			->setClass(RouteManager::class, [$this->prefix('@mainRouter'), $routers]);
 
 		// kdyby/console fix
 		if ($serviceName = $builder->getByType(IRouter::class)) {
