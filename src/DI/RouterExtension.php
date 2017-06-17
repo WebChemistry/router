@@ -34,12 +34,14 @@ class RouterExtension extends CompilerExtension {
 			throw new RouterException('Main route must be set.');
 		}
 
+		$this->checkRouter($config['main']);
 		$builder->addDefinition($this->prefix('mainRouter'))
 			->setClass(Routing\IRouter::class)
 			->setFactory($config['main']);
 
 		$routers = [];
 		foreach ($config['routers'] as $name => $router) {
+			$this->checkRouter($router);
 			$routers[] = $builder->addDefinition($this->prefix('router.' . $name))
 				->setClass(Routing\IRouter::class)
 				->setFactory($router)
@@ -70,6 +72,12 @@ class RouterExtension extends CompilerExtension {
 
 		$builder->getDefinition('router')
 			->setFactory('@' . RouteManager::class . '::createRouter');
+	}
+
+	private function checkRouter(string $class): void {
+		if (!class_exists($class)) {
+			throw new RouterException("Router $class not exists.");
+		}
 	}
 
 }
