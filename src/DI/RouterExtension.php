@@ -12,6 +12,8 @@ use WebChemistry\Routing;
 
 class RouterExtension extends CompilerExtension {
 
+	const ROUTER_TAG = 'router';
+
 	/** @var array */
 	public $defaults = [
 		'routers' => [],
@@ -36,20 +38,20 @@ class RouterExtension extends CompilerExtension {
 
 		$this->checkRouter($config['main']);
 		$builder->addDefinition($this->prefix('mainRouter'))
-			->setClass(Routing\IRouter::class)
+			->setType(Routing\IRouter::class)
 			->setFactory($config['main']);
 
 		$routers = [];
 		foreach ($config['routers'] as $name => $router) {
 			$this->checkRouter($router);
 			$routers[] = $builder->addDefinition($this->prefix('router.' . $name))
-				->setClass(Routing\IRouter::class)
+				->setType(Routing\IRouter::class)
 				->setFactory($router)
 				->setAutowired(FALSE);
 		}
 
 		$builder->addDefinition($this->prefix('routerManager'))
-			->setClass(RouteManager::class, [$this->prefix('@mainRouter'), $routers]);
+			->setFactory(RouteManager::class, [$this->prefix('@mainRouter'), $routers]);
 
 		// kdyby/console fix
 		if ($serviceName = $builder->getByType(IRouter::class)) {
@@ -65,10 +67,14 @@ class RouterExtension extends CompilerExtension {
 	 * @return void
 	 */
 	public function beforeCompile(): void {
+		$builder = $this->getContainerBuilder();
+		foreach ($builder->findByTag(self::ROUTER_TAG) as $name => $attrs) {
+			$builder->getDefinition($this->prefix('routerManager'))
+				->addSetup('addRouter', [$builder->getDefinition($name)]);
+		}
 		if ($this->fixed) {
 			return;
 		}
-		$builder = $this->getContainerBuilder();
 
 		$builder->getDefinition('router')
 			->setFactory('@' . RouteManager::class . '::createRouter');

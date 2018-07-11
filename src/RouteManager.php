@@ -32,6 +32,16 @@ class RouteManager {
 	}
 
 	/**
+	 * @param IRouter $router
+	 * @return static
+	 */
+	public function addRouter(IRouter $router) {
+		$this->routers[] = $router;
+
+		return $this;
+	}
+
+	/**
 	 * @param string $style
 	 * @param string $parent
 	 */
