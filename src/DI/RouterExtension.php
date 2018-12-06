@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace WebChemistry\Routing\DI;
 
@@ -17,11 +15,11 @@ class RouterExtension extends CompilerExtension {
 	/** @var array */
 	public $defaults = [
 		'routers' => [],
-		'main' => NULL
+		'main' => null,
 	];
 
 	/** @var bool */
-	private $fixed = FALSE;
+	private $fixed = false;
 
 	/**
 	 * Processes configuration data. Intended to be overridden by descendant.
@@ -47,7 +45,7 @@ class RouterExtension extends CompilerExtension {
 			$routers[] = $builder->addDefinition($this->prefix('router.' . $name))
 				->setType(Routing\IRouter::class)
 				->setFactory($router)
-				->setAutowired(FALSE);
+				->setAutowired(false);
 		}
 
 		$builder->addDefinition($this->prefix('routerManager'))
@@ -55,7 +53,7 @@ class RouterExtension extends CompilerExtension {
 
 		// kdyby/console fix
 		if ($serviceName = $builder->getByType(IRouter::class)) {
-			$this->fixed = TRUE;
+			$this->fixed = true;
 			$builder->getDefinition($serviceName)
 				->setFactory('@' . RouteManager::class . '::createRouter');
 		}

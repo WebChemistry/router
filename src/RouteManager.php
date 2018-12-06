@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace WebChemistry\Routing;
 
@@ -18,10 +16,10 @@ class RouteManager {
 	private $routers = [];
 
 	/** @var bool */
-	private $isMain = TRUE;
+	private $isMain = true;
 
 	/** @var bool */
-	private $finished = FALSE;
+	private $finished = false;
 
 	/** @var array */
 	private $forbiddenRouters = [];
@@ -77,15 +75,15 @@ class RouteManager {
 	 * @param int $priority
 	 * @return RouteList
 	 */
-	public function getModule(string $module, ?int $priority = NULL): RouteList {
-		if ($priority === NULL) {
+	public function getModule(string $module, ?int $priority = null): RouteList {
+		if ($priority === null) {
 			$priority = $this->isMain ? 10 : 0;
 		}
 		$this->checkPriority($priority);
 		if (!isset($this->modules[$module])) {
 			$this->createModule($module);
 		}
-		if ($this->modules[$module][$priority] === NULL) {
+		if ($this->modules[$module][$priority] === null) {
 			$this->modules[$module][$priority] = new RouteList($module);
 		}
 
@@ -106,7 +104,7 @@ class RouteManager {
 	 * @throws RouterException
 	 */
 	protected function createModule(string $module): void {
-		$this->modules[$module] = array_fill(0, 11, NULL);
+		$this->modules[$module] = array_fill(0, 11, null);
 	}
 
 	/**
@@ -123,7 +121,7 @@ class RouteManager {
 	 */
 	public function createRouter(): RouteList {
 		foreach ($this->routers as $router) {
-			if ($this->forbiddenRouters && array_search($this->getClass($router), $this->forbiddenRouters) !== FALSE) {
+			if ($this->forbiddenRouters && array_search($this->getClass($router), $this->forbiddenRouters) !== false) {
 				continue;
 			}
 			if (!is_object($router)) {
@@ -134,7 +132,7 @@ class RouteManager {
 			}
 			$router->createRouter($this);
 			if ($this->isMain) {
-				$this->isMain = FALSE;
+				$this->isMain = false;
 				if ($this->finished) {
 					break;
 				}
@@ -163,7 +161,7 @@ class RouteManager {
 		if (!$this->isMain) {
 			throw new RouterException('Only main router can call this method.');
 		}
-		$this->finished = TRUE;
+		$this->finished = true;
 	}
 
 	/**
