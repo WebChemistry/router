@@ -2,6 +2,6 @@
 
 namespace WebChemistry\Routing;
 
-class RouterException extends \Exception {
+class RouterException extends \RuntimeException {
 
 }
