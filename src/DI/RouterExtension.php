@@ -45,7 +45,7 @@ class RouterExtension extends CompilerExtension {
 		}
 
 		$builder->addDefinition($this->prefix('routerManager'))
-			->setFactory(RouteManager::class, [$routers]);
+			->setFactory(RouteManager::class, [$routers, $config['modules']]);
 
 		// kdyby/console fix
 		if ($serviceName = $builder->getByType(IRouter::class)) {
