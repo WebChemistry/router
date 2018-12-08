@@ -15,6 +15,9 @@ class RouteManager {
 	/** @var array */
 	private $routers = [];
 
+	/** @var bool */
+	private $createStage = false;
+
 	public function __construct(array $routers, array $modules) {
 		$this->routers = $routers;
 		foreach ($modules as $module) {
@@ -87,10 +90,15 @@ class RouteManager {
 	}
 
 	/**
+	 * @internal
 	 * @param string $module
 	 * @throws RouterException
 	 */
-	protected function createModule(string $module): void {
+	public function createModule(string $module): void {
+		if ($this->createStage) {
+			throw new RouterException('Cannot create module in router. Please create it in extension or config.');
+		}
+
 		$this->modules[$module] = array_fill(0, 11, null);
 	}
 
@@ -99,6 +107,8 @@ class RouteManager {
 	 * @throws RouterException
 	 */
 	public function createRouter(): RouteList {
+		$this->createStage = true;
+
 		foreach ($this->routers as $router) {
 			if (!is_object($router)) {
 				$router = new $router;
@@ -125,6 +135,8 @@ class RouteManager {
 				$return[] = $routeList;
 			}
 		}
+
+		$this->createStage = false;
 
 		return $return;
 	}
