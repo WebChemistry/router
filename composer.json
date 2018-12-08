@@ -14,17 +14,17 @@
 		"nette/application": "^2.3 || ^3.0"
 	},
 	"require-dev": {
-		"nette/di": "^2.3 || ^3.0"
+		"nette/di": "^2.3 || ^3.0",
+		"codeception/codeception": "^2.5"
 	},
 	"autoload": {
-		"classmap": [
-			"src/"
-		]
-	},
-	"authors": [
-		{
-			"name": "Antik",
-			"email": "antik494@gmail.com"
+		"psr-4":  {
+			"WebChemistry\\Routing\\": ["src/"]
 		}
-	]
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Test\\": ["tests/classes/"]
+		}
+	}
 }

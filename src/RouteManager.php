@@ -15,18 +15,11 @@ class RouteManager {
 	/** @var array */
 	private $routers = [];
 
-	/** @var bool */
-	private $isMain = true;
-
-	/** @var bool */
-	private $finished = false;
-
-	/** @var array */
-	private $forbiddenRouters = [];
-
-	public function __construct(IRouter $mainRouter, array $routers) {
+	public function __construct(array $routers, array $modules) {
 		$this->routers = $routers;
-		array_unshift($this->routers, $mainRouter);
+		foreach ($modules as $module) {
+			$this->createModule($module);
+		}
 	}
 
 	/**
@@ -75,13 +68,10 @@ class RouteManager {
 	 * @param int $priority
 	 * @return RouteList
 	 */
-	public function getModule(string $module, ?int $priority = null): RouteList {
-		if ($priority === null) {
-			$priority = $this->isMain ? 10 : 0;
-		}
+	public function getModule(string $module, int $priority = 0): RouteList {
 		$this->checkPriority($priority);
 		if (!isset($this->modules[$module])) {
-			$this->createModule($module);
+			throw new RouterException("Router module '$module' is not set. Please configure it.");
 		}
 		if ($this->modules[$module][$priority] === null) {
 			$this->modules[$module][$priority] = new RouteList($module);
@@ -91,9 +81,6 @@ class RouteManager {
 	}
 
 	protected function checkPriority(int $priority): void {
-		if ($priority === 10 && !$this->isMain) {
-			throw new RouterException('Only main router can set priority 10.');
-		}
 		if ($priority < 0 || $priority > 10) {
 			throw new OutOfRangeException('Priority out of range.');
 		}
@@ -108,22 +95,11 @@ class RouteManager {
 	}
 
 	/**
-	 * @param string $router
-	 * @return string
-	 */
-	private function getClass(string $router): string {
-		return is_object($router) ? get_class($router) : $router;
-	}
-
-	/**
 	 * @return RouteList
 	 * @throws RouterException
 	 */
 	public function createRouter(): RouteList {
 		foreach ($this->routers as $router) {
-			if ($this->forbiddenRouters && array_search($this->getClass($router), $this->forbiddenRouters) !== false) {
-				continue;
-			}
 			if (!is_object($router)) {
 				$router = new $router;
 			}
@@ -131,17 +107,11 @@ class RouteManager {
 				throw new RouterException('Class ' . get_class($router) . ' must implements ' . IRouter::class);
 			}
 			$router->createRouter($this);
-			if ($this->isMain) {
-				$this->isMain = false;
-				if ($this->finished) {
-					break;
-				}
-			}
 		}
 
 		$return = new RouteList();
 		foreach ($this->modules as $module => $values)	 {
-			$routeList = new RouteList($module);
+			$routeList = !$module ? $return : new RouteList($module);
 			/** @var RouteList $list */
 			foreach ($values as $list) {
 				if ($list) {
@@ -150,18 +120,17 @@ class RouteManager {
 					}
 				}
 			}
-			$routeList->warmupCache();
-			$return[] = $routeList;
+			if ($routeList !== $return) {
+				$routeList->warmupCache();
+				$return[] = $routeList;
+			}
 		}
 
 		return $return;
 	}
 
 	public function finish(): void {
-		if (!$this->isMain) {
-			throw new RouterException('Only main router can call this method.');
-		}
-		$this->finished = true;
+		trigger_error('finish() is deprecated', E_USER_DEPRECATED);
 	}
 
 	/**
@@ -169,10 +138,7 @@ class RouteManager {
 	 * @throws RouterException
 	 */
 	public function setForbiddenRouters(array $forbiddenRouters): void {
-		if (!$this->isMain) {
-			throw new RouterException('Only main router can set forbidden routers.');
-		}
-		$this->forbiddenRouters = $forbiddenRouters;
+		trigger_error('setForbiddenRouters is deprecated', E_USER_DEPRECATED);
 	}
 
 }

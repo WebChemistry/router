@@ -15,7 +15,8 @@ class RouterExtension extends CompilerExtension {
 	/** @var array */
 	public $defaults = [
 		'routers' => [],
-		'main' => null,
+		'modules' => [],
+		'main' => null, // deprecated
 	];
 
 	/** @var bool */
@@ -30,14 +31,9 @@ class RouterExtension extends CompilerExtension {
 		$builder = $this->getContainerBuilder();
 		$config = $this->validateConfig($this->defaults, $this->getConfig());
 
-		if (!$config['main']) {
-			throw new RouterException('Main route must be set.');
+		if ($config['main']) {
+			trigger_error('Main router is deprecated, add it to option "routers".', E_USER_DEPRECATED);
 		}
-
-		$this->checkRouter($config['main']);
-		$builder->addDefinition($this->prefix('mainRouter'))
-			->setType(Routing\IRouter::class)
-			->setFactory($config['main']);
 
 		$routers = [];
 		foreach ($config['routers'] as $name => $router) {
@@ -49,7 +45,7 @@ class RouterExtension extends CompilerExtension {
 		}
 
 		$builder->addDefinition($this->prefix('routerManager'))
-			->setFactory(RouteManager::class, [$this->prefix('@mainRouter'), $routers]);
+			->setFactory(RouteManager::class, [$routers]);
 
 		// kdyby/console fix
 		if ($serviceName = $builder->getByType(IRouter::class)) {

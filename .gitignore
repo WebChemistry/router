@@ -1,2 +1,5 @@
+## ide
+.idea/
+
 vendor/
 composer.lock
