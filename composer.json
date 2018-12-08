@@ -14,17 +14,44 @@
 		"nette/application": "^2.3 || ^3.0"
 	},
 	"require-dev": {
+		"ninjify/qa": "^0.8.0",
 		"nette/di": "^2.3 || ^3.0",
 		"codeception/codeception": "^2.5"
 	},
 	"autoload": {
 		"psr-4":  {
 			"WebChemistry\\Routing\\": ["src/"]
-		}
+		},
+		 "files": [
+			"vendor/codeception/codeception/shim.php"
+		]
 	},
 	"autoload-dev": {
 		"psr-4": {
 			"Test\\": ["tests/classes/"]
 		}
+	},
+	"scripts": {
+		"qa": [
+			"linter src tests",
+			"codesniffer src tests"
+		],
+		"tests": [
+			"vendor/bin/codecept build",
+			"vendor/bin/codecept run --debug"
+		],
+		"coverage": [
+			"phpdbg -qrr vendor/bin/phpunit tests --colors=always -c tests/coverage.xml"
+		],
+		"phpstan-install": [
+		  "mkdir -p temp/phpstan",
+		  "composer require -d temp/phpstan phpstan/phpstan:^0.10",
+		  "composer require -d temp/phpstan phpstan/phpstan-deprecation-rules:^0.10",
+		  "composer require -d temp/phpstan phpstan/phpstan-nette:^0.10",
+		  "composer require -d temp/phpstan phpstan/phpstan-strict-rules:^0.10"
+		],
+		"phpstan": [
+			"temp/phpstan/vendor/bin/phpstan analyse -l max -c phpstan.neon src"
+		]
 	}
 }
