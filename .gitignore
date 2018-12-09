@@ -1,5 +1,7 @@
 ## ide
-.idea/
+/.idea/*
+/nbproject/*
 
-vendor/
-composer.lock
+/temp/*
+/vendor/*
+/composer.lock

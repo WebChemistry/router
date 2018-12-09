@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace WebChemistry\Routing;
 
@@ -122,16 +122,15 @@ class RouteManager {
 		$return = new RouteList();
 		foreach ($this->modules as $module => $values)	 {
 			$routeList = !$module ? $return : new RouteList($module);
-			/** @var RouteList $list */
+			/** @var RouteList|null $list */
 			foreach ($values as $list) {
-				if ($list) {
+				if($list) {
 					foreach ($list->getIterator() as $route) {
 						$routeList[] = $route;
 					}
 				}
 			}
 			if ($routeList !== $return) {
-				$routeList->warmupCache();
 				$return[] = $routeList;
 			}
 		}
