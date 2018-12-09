@@ -14,7 +14,6 @@
 		"nette/application": "^2.3 || ^3.0"
 	},
 	"require-dev": {
-		"ninjify/qa": "^0.8.0",
 		"nette/di": "^2.3 || ^3.0",
 		"codeception/codeception": "^2.5"
 	},
@@ -29,16 +28,9 @@
 		}
 	},
 	"scripts": {
-		"qa": [
-			"linter src tests",
-			"codesniffer src tests"
-		],
 		"tests": [
 			"vendor/bin/codecept build",
 			"vendor/bin/codecept run --debug"
-		],
-		"coverage": [
-			"phpdbg -qrr vendor/bin/phpunit tests --colors=always -c tests/coverage.xml"
 		],
 		"phpstan-install": [
 			"mkdir -p temp/phpstan",

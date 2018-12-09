@@ -26,34 +26,12 @@ jobs:
       script:
         - composer run-script tests
 
-    - stage: Quality Assurance
-      php: 7.1
-      script:
-        - composer run-script qa
-
     - stage: Phpstan
       php: 7.1
       script:
         - composer run-script phpstan-install
         - composer run-script phpstan
 
-    - stage: Test Coverage
-      if: branch = master AND type = push
-      php: 7.1
-      script:
-        - composer run-script coverage
-      after_script:
-        - wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
-        - php php-coveralls.phar --verbose --config tests/.coveralls.yml
-
-    - stage: Outdated Dependencies
-      if: branch = master AND type = cron
-      php: 7.1
-      script:
-        - composer outdated --direct --strict
-
-  allow_failures:
-    - stage: Test Coverage
 
 sudo: false
 
