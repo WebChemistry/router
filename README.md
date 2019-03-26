@@ -140,7 +140,7 @@ class TestRouter implements IRouter
 app/config.neon:
 
 ```yaml
-extensiona:
+extensions:
 
     ...
     - TestPackage\Test\DI\TestExtension
@@ -150,7 +150,7 @@ extensiona:
 For correct router orders, you have to list all routers in app/config.neon:
 
 ```yaml
-extensiona:
+extensions:
     ...
     routers: WebChemistry\Routing\DI\RouterExtension
     - TestPackage\Test\DI\TestExtension
